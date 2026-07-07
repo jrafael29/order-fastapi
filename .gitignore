@@ -1,0 +1,89 @@
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# ===== Ambientes virtuais =====
+venv/
+env/
+.venv/
+.env/
+ENV/
+env.bak/
+venv.bak/
+
+# ===== Variáveis de ambiente / segredos =====
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# ===== Distribuição / build =====
+build/
+dist/
+*.egg-info/
+.eggs/
+*.egg
+MANIFEST
+
+# ===== Testes / coverage =====
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+nosetests.xml
+
+# ===== Type checking / linters =====
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.ruff_cache/
+.pyre/
+.pytype/
+
+# ===== FastAPI / Uvicorn / Gunicorn =====
+*.log
+logs/
+uvicorn.log
+
+# ===== Banco de dados local =====
+*.sqlite3
+*.db
+
+# ===== Migrações (opcional - descomente se não quiser versionar) =====
+# alembic/versions/
+
+# ===== Docker =====
+*.env.docker
+docker-compose.override.yml
+
+# ===== Jupyter Notebooks =====
+.ipynb_checkpoints/
+
+# ===== IDEs / Editores =====
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ===== Sistema Operacional =====
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ===== Celery (se usar) =====
+celerybeat-schedule
+celerybeat.pid
+
+# ===== Cache diversos =====
+.cache/
+*.bak
+
+

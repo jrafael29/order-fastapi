@@ -1,10 +1,20 @@
 from sqlalchemy import create_engine, ForeignKey, func, Enum as SQLEnum
-from sqlalchemy.orm import mapped_column, Mapped, DeclarativeBase, relationship
+from sqlalchemy.orm import sessionmaker, mapped_column, Mapped, DeclarativeBase, relationship
 from sqlalchemy.types import String, Boolean, DateTime
 from enum import Enum
 from datetime import datetime
 
 db = create_engine("sqlite:///database.db")
+
+SessionLocal = sessionmaker(bind=db);
+
+def get_session():
+  db = SessionLocal();
+  try:
+    yield db;
+  finally:
+    # print("sessão fechada")
+    db.close();
 
 class Base(DeclarativeBase):
   pass;

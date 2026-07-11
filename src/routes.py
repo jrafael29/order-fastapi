@@ -1,22 +1,20 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from src.models import get_session, User
-from src.schemes import SignupSchema, SigninSchema
+from src.schemes import SignupSchema, SigninSchema, RefreshTokenSchema
 from src.crypto import bcrypt_context
 from src.validator import email_validator, string_length_validator
 from datetime import datetime, timedelta
-from jose import jwt, JWTError
+from jose import jwt, JWTError, ExpiredSignatureError
 from enum import Enum
 
 auth_router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 order_router = APIRouter(prefix="/order", tags=["Orders"])
 
-
 JWT_EXPIRE_MINUTES=1
 JWT_SECRET_KEY="ifewifmsokmiodqwndi"
 JWT_ALGORITHM="HS256"
-
 
 class JWTType(Enum):
   ACCESS = "access"
@@ -29,13 +27,32 @@ def generate_jwt(
     type: JWTType = JWTType.ACCESS
 ) -> str:
   expiration = datetime.now() + expiration;
-  jwt_info = {"sub": user.id, "type": type.value, "exp": expiration};
+  jwt_info = {"sub": str(user.id), "type": type.value, "exp": expiration};
   generated_jwt = jwt.encode(jwt_info, JWT_SECRET_KEY, JWT_ALGORITHM);
   return generated_jwt;
 
-def verify_jwt(token):
-  pass;
-  
+def verify_jwt(data: RefreshTokenSchema, session = Depends(get_session)):
+  refresh_token = data.refresh_token
+  print("Refresh Token", refresh_token);
+
+  try:
+    token_result = jwt.decode(token=refresh_token, key=JWT_SECRET_KEY);
+    print("token result: ", token_result);
+    if not token_result.get("type") == JWTType.REFRESH:
+      raise HTTPException(status_code=401,detail="Only refresh tokens are accepted")
+
+    user_id = token_result.get("sub");
+    user = session.query(User).filter(User.id == user_id).first()
+    if user is None:
+      raise HTTPException(status_code=401,detail="User not found")
+
+    new_access_token = generate_jwt(user=user)
+    
+    return new_access_token
+  except ExpiredSignatureError:
+    raise HTTPException(status_code=401, detail="Token signature has expired")
+  except JWTError as err:
+    raise HTTPException(status_code=401, detail="Invalid token");
 
 
 @auth_router.post("/signup")
@@ -83,6 +100,14 @@ async def login(data: SigninSchema, session: Session = Depends(get_session)):
     "refresh_token": jwt_refresh_token,
     "token_type": "Bearer"
   };
+
+@auth_router.post("/refresh-token")
+# async def refresh_token(data: RefreshTokenSchema):
+async def refresh_token(new_access_token = Depends(verify_jwt)):
+  return {
+    "access_token": new_access_token,
+    "token_type": "Bearer"
+  }
 
 
 def dependente(tokeneas):

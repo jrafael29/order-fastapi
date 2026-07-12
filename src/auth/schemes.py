@@ -1,4 +1,7 @@
 from pydantic import BaseModel, ConfigDict
+from fastapi.security import OAuth2PasswordBearer
+
+oauth2_schema = OAuth2PasswordBearer(tokenUrl="auth/signin-form")
 
 class SignupSchema(BaseModel):
   name: str

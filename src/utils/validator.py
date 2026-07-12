@@ -1,5 +1,5 @@
 from email_validator import validate_email, EmailNotValidError
-
+import os;
 
 
 def string_length_validator(string: str, length: int = 255):
@@ -14,3 +14,4 @@ def email_validator(email: str) -> str | bool:
     return is_email_valid.normalized # retorna email normalizado
   except EmailNotValidError as err:
     return False
+  
